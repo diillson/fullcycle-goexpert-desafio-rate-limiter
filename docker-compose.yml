@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - IP_MAX_REQUESTS=5
+      - IP_BLOCK_DURATION=5
+      - TOKEN_MAX_REQUESTS=10
+      - TOKEN_BLOCK_DURATION=5
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - GO_ENV=test
